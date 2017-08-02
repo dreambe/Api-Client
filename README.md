@@ -1,22 +1,12 @@
-# WebApiTestClient
+# Api-Cli
 
 <!-- BADGES/ -->
 ![Python Version](https://img.shields.io/badge/python-3.3%2C%203.4%2C%203.5-blue.svg)
-[![Build Status](https://travis-ci.org/dzcdzcdzcdzc/WebApiTestClient.svg?branch=master)](https://travis-ci.org/dzcdzcdzcdzc/WebApiTestClient)
-[![Code Climate](https://codeclimate.com/github/dzcdzcdzcdzc/WebApiTestClient/badges/gpa.svg)](https://codeclimate.com/github/dzcdzcdzcdzc/WebApiTestClient)
-[![Coverage Status](https://coveralls.io/repos/dzcdzcdzcdzc/WebApiTestClient/badge.svg?branch=master&service=github)](https://coveralls.io/github/dzcdzcdzcdzc/WebApiTestClient?branch=master)
+
 <!-- /BADGES -->
 ## 简介
 python3编写的web api测试工具。使用官方库，安装完python环境包可以直接使用。
 
-ubuntu默认需安装tkinter，需运行apt-get install python3-tk -y
-
-windows环境下，启动时不希望已最大化方式打开，就删除main.py倒数第二、第三行的
-
-    if platform.system() == "Windows":
-        root.wm_state('zoomed')
-
-使用时将main.py重命名成main.pyw，启动时不会出现console。
 
 ## 功能
 - 请求
@@ -33,11 +23,7 @@ windows环境下，启动时不希望已最大化方式打开，就删除main.py
 
 ## 界面
 
-ubuntu:
-![ubuntu](https://github.com/dzcdzcdzcdzc/WebApiTestClient/raw/master/images/ubuntu.jpg)
 
-win7:
-![win7](https://github.com/dzcdzcdzcdzc/WebApiTestClient/raw/master/images/win7.jpg)
 
 ## 未来
  - 加入更多请求功能
