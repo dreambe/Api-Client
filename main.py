@@ -1,6 +1,5 @@
 from tkinter import *
 import time
-import platform
 import threading
 import ui
 import crawler

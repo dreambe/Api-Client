@@ -84,7 +84,7 @@ class Test(object):
                 data['info'] += k + ": " + v + "\n"
                 if k == 'Host':
                     ip = socket.gethostbyname(v)
-                    data['info'] += "IP-Host" + ": " + ip + "\n"
+                    data['info'] += "Host-ip" + ": " + ip + "\n"
             data['info'] += "\n"
             # 接收包的头文件
             data['info'] += "接收包的头文件：\n" + str(urlopen.info()) + "\n"
