@@ -40,16 +40,6 @@ class ClientView(object):
         self.control_frame()
         # 生成结果框架
         self.result_frame()
-        # result_frame = Frame()
-
-        # self._header_text = Text(result_frame, state="normal", width=1, bg="grey")
-        # self._body_text = Text(result_frame, state="normal", width=1, bg="grey")
-        # result_frame.pack(side=BOTTOM, expand=YES, fill=BOTH)
-        # self._header_text.pack(side=LEFT, expand=YES, fill=BOTH)
-        # self._body_text.pack(side=RIGHT, expand=YES, fill=BOTH)
-        # # 禁止文本框输入
-        # self._header_text.bind("<KeyPress>", lambda e: "break")
-        # self._body_text.bind("<KeyPress>", lambda e: "break")
 
     def control_frame(self):
         """
@@ -110,10 +100,10 @@ class ClientView(object):
         """
         self._method_value = method_value
         if self._method_value == 'GET':
-            self.del_all_value(payload_frame, self.method_row)
+            self.remove_block(payload_frame, self.method_row)
         elif self._method_value == 'POST':
             if not payload_frame.children:
-                self.add_all_value(payload_frame, "POST:", self.method_row)
+                self.create_block(payload_frame, "POST:", self.method_row)
         else:
             raise ValueError
         # To do
@@ -125,15 +115,16 @@ class ClientView(object):
         """
         self._check_status = check_status
         if not self._check_status:
-            self.del_all_value(header_frame, self.header_row)
+            self.remove_block(header_frame, self.header_row)
         elif self._check_status:
             if not header_frame.children:
-                self.add_all_value(header_frame, "HEADER:", self.header_row)
+                self.create_block(header_frame, "HEADER:", self.header_row)
 
     def add_row(self, payload_frame, row):
         """
         增加一行
         """
+        print("add_row")
         key_entry, value_entry, delete_button = row
         row_value = Frame(payload_frame)
         row_value.pack(side=TOP, fill=X)
@@ -159,6 +150,7 @@ class ClientView(object):
         """
         删除一行
         """
+        print("del_row")
         key_entry, value_entry, delete_button = row
         for widget in button.master.children.values():
             widget in key_entry and key_entry.remove(widget)
@@ -168,31 +160,26 @@ class ClientView(object):
         self.button_disable(
             payload_frame, (key_entry, value_entry, delete_button))
 
-    def add_all_value(self, frame, text, row):
+    def create_block(self, frame, text, row):
         """
-        增加一行添加按钮行
-        :param frame 增加一行的frame:
-        :param text 显示的说明文字:
-        :param row 键、值文本框和删除按钮对象的元组:
-        :return None:
+        增加一块区域包括输入框、按钮等
         """
+        print("create_block")
         row_value = Frame(frame)
         row_value.pack(side=TOP, fill=X)
         post_label = Label(row_value, text=text)
         post_label.pack(side=LEFT)
-        add_button = Button(row_value, text="添加", width=5,
+        add_button = Button(row_value, text="增加", width=5,
                             command=(lambda: self.add_row(frame, row)))
         add_button.pack(side=RIGHT)
         self.add_row(frame, row)
 
-    @staticmethod
-    def del_all_value(frame, row):
+    # @staticmethod
+    def remove_block(self, frame, row):
         """
-        删除一整块输入框
-        :param frame 删除所有输入框的frame:
-        :param row 要清除键、值文本框和删除按钮对象的元组:
-        :return None:
+        删除一整块区域包括输入框、按钮等
         """
+        print("remove_block")
         for v in row:
             v.clear()
         while 1:
@@ -205,10 +192,8 @@ class ClientView(object):
     def button_disable(self, payload_frame, row):
         """
         判断删除按钮是否应该禁用
-        :param payload_frame 一群删除按钮所在的frame的对象:
-        :param row 键、值文本框和删除按钮对象的元组:
-        :return None:
         """
+        print("disable")
         key_entry, value_entry, delete_button = row
         if len(delete_button) > 1:
             for button in delete_button:
@@ -230,11 +215,30 @@ class ClientView(object):
                self._check_status, len(self._header_key), len(self._header_value), len(self._header_del_button)])
 
 
+def get_screen_size(window):
+    return window.winfo_screenwidth(), window.winfo_screenheight()
+
+
+def get_window_size(window):
+    return window.winfo_reqwidth(), window.winfo_reqheight()
+
+
+def center_window(root, width, height):
+    screenwidth = root.winfo_screenwidth()
+    screenheight = root.winfo_screenheight()
+    size = '%dx%d+%d+%d' % (width, height, (screenwidth -
+                                            width) / 2, (screenheight - height) / 2)
+    print(size)
+    root.geometry(size)
+
+
 if __name__ == '__main__':
+
     root = Tk()
     root.title("Api-Client")
     ClientView(master=root)
-    root.maxsize(1000, 800)
-    root.minsize(800, 600)
+    center_window(root, 400, 300)
+    root.maxsize(1200, 900)
+    root.minsize(300, 200)
     root.resizable(True, True)
     root.mainloop()
