@@ -4,8 +4,7 @@ import time
 
 import requests
 from requests import Request, Response
-from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema,
-                                 RequestException)
+from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema, RequestException)
 
 from ate.exception import ParamsError
 
