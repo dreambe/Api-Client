@@ -1,13 +1,13 @@
 from tkinter import *
 import time
 import threading
-import ui
+import view
 import crawler
 
 
-class CrawlerUI(ui.TestUI):
+class Client(view.ClientView):
     def __init__(self, master=None):
-        super(CrawlerUI, self).__init__()
+        super(Client, self).__init__()
         self.root = master
         self.test = crawler.Test()
 
@@ -17,7 +17,7 @@ class CrawlerUI(ui.TestUI):
         :return:None
         """
         # 禁用提交按钮
-        self._submit_button.configure(state="disabled", text="提交中")
+        self._send_button.configure(state="disabled", text="提交中")
         # 启动线程
         t = threading.Thread(target=self.submit_event)
         t.setDaemon(True)
@@ -34,23 +34,23 @@ class CrawlerUI(ui.TestUI):
             self._url_entry.insert(0, "http://")
             url = "http://" + url
         first_time = time.time()
-        if self._mode_value == 'GET':
+        if self._method == 'GET':
             # 读取参数发送
             header = self.get_dict(self._header_key, self._header_value)
             dict_result = self.test.get(url, header)
-        elif self._mode_value == 'POST':
+        elif self._method == 'POST':
             # 读取参数发送
             post = self.get_dict(self._key_entry, self._value_entry)
             header = self.get_dict(self._header_key, self._header_value)
             dict_result = self.test.post(url, post, header)
         else:
-            self._submit_button.configure(state="normal", text="提交")
+            self._send_button.configure(state="normal", text="提交")
             raise ValueError
         last_time = time.time()
         dict_result['errmsg'] += "\n\n请求时间：" + str(last_time - first_time) + "s"
         self.result(dict_result)
         # 启用提交按钮
-        self._submit_button.configure(state="normal", text="提交")
+        self._send_button.configure(state="normal", text="提交")
 
     def result(self, dict_result):
         """
@@ -78,28 +78,14 @@ class CrawlerUI(ui.TestUI):
 
     @staticmethod
     def get_dict(key, value):
-        """
-        传入key和value的text对象获取字典值
-        :param key: key值对象的list
-        :param value: value值对象的list
-        :return:key和value匹配的字典
-        """
         return dict(zip(map(lambda k: k.get(), key), map(lambda k: k.get(), value)))
 
     def clear_text(self):
-        """
-        清除文本框内容
-        :return:None
-        """
         self._header_text.delete("1.0", END)
         self._body_text.delete("1.0", END)
 
     def insert_text(self, info):
-        """
-        插入文本框内容
-        :param info: 写入文本框的内容
-        :return:None
-        """
+
         self._header_text.insert(END, info['info'])
         self._header_text.insert(END, info['msg'] + "\n")
         self._header_text.insert(END, info['errmsg'] + "\n")
@@ -108,8 +94,8 @@ class CrawlerUI(ui.TestUI):
 
 if __name__ == '__main__':
     root = Tk()
-    root.title("接口测试工具")
-    CrawlerUI(master=root)
+    root.title("Api-Client")
+    Client(master=root)
     root.minsize(800, 600)
     # if platform.system() == "Windows":
     #     root.wm_state('zoomed')

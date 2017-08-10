@@ -3,35 +3,24 @@ from tkinter.ttk import *
 
 
 class ClientView(object):
-    # _method_value 发送模式
     _method = 'GET'
-    _text = []
+    _check_status = False
 
-    # _key_entry 参数框架的key值文本框对象
-    # _value_entry 参数框架的value值文本框对象
-    # _value_del_button 参数框架的删除按钮，为了简化“判断删除按钮是否应该禁用”
-    # method_row 打包上面对象，传参使用
+    # payload 区域
     _key_entry = []
     _value_entry = []
     _value_del_button = []
     method_row = (_key_entry, _value_entry, _value_del_button)
-    # _check_status 发送header复选框
-    _check_status = False
-    # _key_entry HEADER框架的key值文本框对象
-    # _value_entry HEADER框架的value值文本框对象
-    # _value_del_button HEADER框架的删除按钮
-    # header_row 打包上面对象，传参使用
+
+    # header 区域
     _header_key = []
     _header_value = []
     _header_del_button = []
     header_row = (_header_key, _header_value, _header_del_button)
-    # url文本框对象
+
     _url_entry = object
-    # 提交按钮对象
-    _submit_button = object
-    # 下方左边文本框对象
+    _send_button = object
     _header_text = object
-    # 下方右边文本框对象
     _body_text = object
 
     def __init__(self, master=None):
@@ -71,9 +60,9 @@ class ClientView(object):
                              command=(lambda: self.select_header(check_status.get(), header_frame)))
         send_frame.pack(side=TOP, fill=X)
         header.pack(side=LEFT)
-        self._submit_button = Button(
+        self._send_button = Button(
             send_frame, text="Send", width=10, command=(lambda: self.submit()))
-        self._submit_button.pack(side=RIGHT)
+        self._send_button.pack(side=RIGHT)
         # 动作
         method.bind('<<ComboboxSelected>>', (lambda event: self.switch_method(
             method.get(), payload_frame)))
@@ -124,7 +113,6 @@ class ClientView(object):
         """
         增加一行
         """
-        print("add_row")
         key_entry, value_entry, delete_button = row
         row_value = Frame(payload_frame)
         row_value.pack(side=TOP, fill=X)
@@ -150,7 +138,6 @@ class ClientView(object):
         """
         删除一行
         """
-        print("del_row")
         key_entry, value_entry, delete_button = row
         for widget in button.master.children.values():
             widget in key_entry and key_entry.remove(widget)
@@ -164,7 +151,6 @@ class ClientView(object):
         """
         增加一块区域包括输入框、按钮等
         """
-        print("create_block")
         row_value = Frame(frame)
         row_value.pack(side=TOP, fill=X)
         post_label = Label(row_value, text=text)
@@ -179,7 +165,6 @@ class ClientView(object):
         """
         删除一整块区域包括输入框、按钮等
         """
-        print("remove_block")
         for v in row:
             v.clear()
         while 1:
@@ -193,7 +178,6 @@ class ClientView(object):
         """
         判断删除按钮是否应该禁用
         """
-        print("disable")
         key_entry, value_entry, delete_button = row
         if len(delete_button) > 1:
             for button in delete_button:
@@ -226,9 +210,7 @@ def get_window_size(window):
 def center_window(root, width, height):
     screenwidth = root.winfo_screenwidth()
     screenheight = root.winfo_screenheight()
-    size = '%dx%d+%d+%d' % (width, height, (screenwidth -
-                                            width) / 2, (screenheight - height) / 2)
-    print(size)
+    size = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
     root.geometry(size)
 
 
@@ -239,6 +221,6 @@ if __name__ == '__main__':
     ClientView(master=root)
     center_window(root, 400, 300)
     root.maxsize(1200, 900)
-    root.minsize(300, 200)
+    root.minsize(600, 400)
     root.resizable(True, True)
     root.mainloop()
