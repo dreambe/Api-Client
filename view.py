@@ -73,9 +73,9 @@ class ClientView(object):
         """
         result_frame = Frame(self.root)
         self._header_text = Text(
-            result_frame, state="normal", width=1, bg="grey")
+            result_frame, state="normal", width=1,)
         self._body_text = Text(
-            result_frame, state="normal", width=1, bg="grey")
+            result_frame, state="normal", width=1)
         result_frame.pack(side=BOTTOM, expand=YES, fill=BOTH)
         self._header_text.pack(side=LEFT, expand=YES, fill=BOTH)
         self._body_text.pack(side=RIGHT, expand=YES, fill=BOTH)

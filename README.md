@@ -5,7 +5,11 @@
 
 <!-- /BADGES -->
 ## 简介
-python3编写的web api测试工具。使用官方库，安装完python环境包可以直接使用。
+python3编写的API测试工具。第三方库用到requests
+这次httpclient的设计是参考了locust，在读locust源码的时候，发现它对HTTP客户端的封装方式非常棒，将请求时间、log等封装进去，给我留下了深刻的印象。它主要是，继承第三方库requests，requests.Session类，在子类HttpSession中重新封装了request方法
+
+## 安装
+$ pip install requests
 
 
 ## 功能
