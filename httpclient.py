@@ -6,7 +6,7 @@ import requests
 from requests import Request, Response
 from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema, RequestException)
 
-from ate.exception import ParamsError
+from exception import ParamsError
 
 absolute_http_url_regexp = re.compile(r"^https?://", re.I)
 
@@ -35,6 +35,7 @@ class HttpSession(requests.Session):
 
     def __init__(self, base_url=None, *args, **kwargs):
         super(HttpSession, self).__init__(*args, **kwargs)
+
         self.base_url = base_url if base_url else ""
 
     def _build_url(self, path):
@@ -90,6 +91,7 @@ class HttpSession(requests.Session):
         logging.debug(" kwargs: {kwargs}".format(kwargs=kwargs))
         # store meta data that is used when reporting the request to locust's statistics
         request_meta = {}
+        response_meta = {}
 
         # set up pre_request hook for attaching meta data to the request object
         request_meta["method"] = method
@@ -106,7 +108,10 @@ class HttpSession(requests.Session):
             .request.path_url
 
         # record the consumed time
-        request_meta["response_time"] = int((time.time() - request_meta["start_time"]) * 1000)
+        response_meta["response_time"] = int((time.time() - request_meta["start_time"]) * 1000)
+        response_meta["status_code"] = response.status_code
+        response_meta["response_headers"] = response.headers
+        response_meta["response_content"] = response.content
 
         # get the length of the content, but if the argument stream is set to True, we take
         # the size from the content-length header, in order to not trigger fetching of the body
@@ -117,9 +122,6 @@ class HttpSession(requests.Session):
 
         request_meta["request_headers"] = response.request.headers
         request_meta["request_body"] = response.request.body
-        request_meta["status_code"] = response.status_code
-        request_meta["response_headers"] = response.headers
-        request_meta["response_content"] = response.content
 
         logging.debug(" response: {response}".format(response=request_meta))
 
@@ -131,10 +133,10 @@ class HttpSession(requests.Session):
         else:
             logging.info(
                 """ status_code: {}, response_time: {} ms, response_length: {} bytes"""
-                .format(request_meta["status_code"], request_meta["response_time"],
+                .format(response_meta["status_code"], response_meta["response_time"],
                         request_meta["content_size"]))
 
-        return response
+        return request_meta, response_meta
 
     def _send_request_safe_mode(self, method, url, **kwargs):
         """

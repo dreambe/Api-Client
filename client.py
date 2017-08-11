@@ -1,15 +1,22 @@
 from tkinter import *
-import time
 import threading
+import json
+
+import utils
 import view
-import crawler
+import httpclient
 
 
 class Client(view.ClientView):
+    """docstring for  Client"view.ClientView def __init__(self, arg):
+        super( Client,view.ClientView.__init__()
+        self.arg = arg
+    """
+
     def __init__(self, master=None):
         super(Client, self).__init__()
         self.root = master
-        self.test = crawler.Test()
+        self.test = httpclient.HttpSession()
 
     def submit(self):
         """
@@ -33,48 +40,49 @@ class Client(view.ClientView):
         if url.find("http"):
             self._url_entry.insert(0, "http://")
             url = "http://" + url
-        first_time = time.time()
-        if self._method == 'GET':
-            # 读取参数发送
-            header = self.get_dict(self._header_key, self._header_value)
-            dict_result = self.test.get(url, header)
-        elif self._method == 'POST':
-            # 读取参数发送
-            post = self.get_dict(self._key_entry, self._value_entry)
-            header = self.get_dict(self._header_key, self._header_value)
-            dict_result = self.test.post(url, post, header)
-        else:
-            self._send_button.configure(state="normal", text="提交")
-            raise ValueError
-        last_time = time.time()
-        dict_result['errmsg'] += "\n\n请求时间：" + str(last_time - first_time) + "s"
-        self.result(dict_result)
+
+        request_meta, response_meta = self.test.request("get", url)
+
+        print('request_headers \n', request_meta['request_headers'])
+        print('request_body \n', request_meta['request_body'])
+        # print('request_content \n', request_meta['request_content'])
+
+        print('response_time \n', response_meta['response_time'])
+        print('status_code \n', response_meta['status_code'])
+        print('response_headers \n', response_meta['response_headers'])
+        print('response_content \n', response_meta['response_content'])
+
+        # response_meta['response_content']['errmsg'] += "\n\n请求时间：" + str(response_meta['response_time']) + "s"
+        # result_data = json.loads(response_meta['response_content'].decode('utf-8'))
+        result_data = utils.assemble(request_meta, response_meta)
+        self.result(result_data)
         # 启用提交按钮
         self._send_button.configure(state="normal", text="提交")
 
-    def result(self, dict_result):
+    def result(self, result_data):
         """
         写入结果到UI
-        :param dict_result: 需要写入的信息
+        :param result_data: 需要写入的信息
         :return:None
         """
+        print(result_data)
         self.clear_text()
-        if dict_result['error'] == 0:
+        if result_data['errno'] == 0:
             pass
-        elif dict_result['error'] == 1:
+        elif result_data['errno'] == 1:
             self._header_text.insert(END, "错误：连接出错\n"
                                           "1.检查输入的地址是否正确\n"
                                           "2.检查输入的POST是否正确\n"
                                           "3.HEADER中不允许有中文字符\n")
-        elif dict_result['error'] == 2:
+        elif result_data['errno'] == 2:
             self._header_text.insert(END, "错误：解析出错\n"
                                           "1.无法解析返回的状态\n")
-        elif dict_result['error'] == 3:
+        elif result_data['errno'] == 3:
             self._header_text.insert(END, "错误：解析出错\n"
                                           "1.无法解析此端口")
-        elif dict_result['error'] == 99:
+        elif result_data['errno'] == 99:
             self._header_text.insert(END, "致命错误：程序出错\n")
-        self.insert_text(dict_result)
+        self.insert_text(result_data)
 
     @staticmethod
     def get_dict(key, value):
@@ -84,12 +92,13 @@ class Client(view.ClientView):
         self._header_text.delete("1.0", END)
         self._body_text.delete("1.0", END)
 
-    def insert_text(self, info):
+    def insert_text(self, result_data):
 
-        self._header_text.insert(END, info['info'])
-        self._header_text.insert(END, info['msg'] + "\n")
-        self._header_text.insert(END, info['errmsg'] + "\n")
-        self._body_text.insert(END, info['read'])
+        self._header_text.insert(END, result_data['request'])
+        # self._header_text.insert(END, result_data['msg'] + "\n")
+        self._header_text.insert(END, result_data['errmsg'] + "\n")
+        # self._body_text.insert(END, result_data['read'])
+        self._body_text.insert(END, result_data['rep_body'])
 
 
 if __name__ == '__main__':
