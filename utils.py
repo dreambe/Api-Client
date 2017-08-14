@@ -5,7 +5,7 @@ def assemble(request_meta, response_meta):
     """
     组装结果返回，将header、body等组装到一起，输出到前端UI
     """
-    data = {'errno': 0, 'rep_time': '0', 'errmsg': '', 'rep_body': '', 'request': ''}
+    data = {'errno': 0, 'rep_time': '', 'status': '', 'errmsg': '', 'rep_body': object, 'request': ''}
 
     # Request Headers:
     data['request'] = "Request Headers: \n"
@@ -19,19 +19,28 @@ def assemble(request_meta, response_meta):
         data['request'] += k + ": " + response_meta['response_headers'][k] + "\n"
     data['request'] += "\n"
 
-    data['rep_time'] += "Response Time: \n"
-    data['rep_time'] += str(response_meta['response_time']) + 's'
-    # Response Body:
-    data['rep_body'] += "Response Body: \n"
+    # Response status code:
+    data['status'] += "Status: " + str(response_meta['status_code']) + "    "
 
+    # Response Time:
+    data['rep_time'] += "Time: "
+    data['rep_time'] += str(response_meta['response_time']) + " ms \n\n"
+
+    # Response Body:
     try:
-        data['rep_body'] += str(json.loads(response_meta['response_content'].decode('utf-8')))
+        data['rep_body'] = json.loads(response_meta['response_content'].decode('utf-8'))
     except ValueError as e:
-        data['rep_body'] += response_meta['response_content'].decode('utf-8')
+        data['rep_body'] = response_meta['response_content'].decode('utf-8')
     except AttributeError as e:
         data['errno'] = 801
-        data['rep_body'] += "请求地址有误!"
+        data['rep_body'] = "请求地址有误!"
     # else:
     #     data['errno'] = 1000
-
+    data['rep_body'] = format_json(data['rep_body'])
     return data
+
+
+def format_json(content):
+    jsoninfo = json.dumps(content, ensure_ascii=False, indent=2)
+    print(jsoninfo)
+    return jsoninfo

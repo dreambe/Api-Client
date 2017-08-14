@@ -1,4 +1,4 @@
-# Api-Cli
+# Api-Client
 
 <!-- BADGES/ -->
 ![Python Version](https://img.shields.io/badge/python-3.3%2C%203.4%2C%203.5-blue.svg)
@@ -27,10 +27,6 @@ $ pip install requests
 
 ## 界面
 
-
-
-## 未来
- - 加入更多请求功能
 
 ## 许可
 The MIT License (MIT) http://opensource.org/licenses/MIT

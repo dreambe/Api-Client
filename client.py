@@ -64,8 +64,10 @@ class Client(view.ClientView):
     def insert_text(self, result_data):
 
         self._header_text.insert(END, result_data['request'])
-        self._header_text.insert(END, result_data['rep_time'])
         self._header_text.insert(END, result_data['errmsg'])
+        self._body_text.insert(END, result_data['status'])
+        self._body_text.insert(END, result_data['rep_time'])
+        self._body_text.insert(END, "Response Body: \n")
         self._body_text.insert(END, result_data['rep_body'])
 
 
