@@ -61,7 +61,7 @@ class ClientView(object):
         send_frame.pack(side=TOP, fill=X)
         header.pack(side=LEFT)
         self._send_button = Button(
-            send_frame, text="Send", width=10, command=(lambda: self.submit()))
+            send_frame, text="Send", width=10, command=(lambda: self.send()))
         self._send_button.pack(side=RIGHT)
         # 动作
         method.bind('<<ComboboxSelected>>', (lambda event: self.switch_method(
@@ -87,12 +87,15 @@ class ClientView(object):
         """
         切换请求方式
         """
-        self._method_value = method_value
-        if self._method_value == 'GET':
+        self._method = method_value
+        if self._method == 'GET':
             self.remove_block(payload_frame, self.method_row)
-        elif self._method_value == 'POST':
+        # elif self._method == 'POST':
+        #     if not payload_frame.children:
+        #         self.create_block(payload_frame, "POST:", self.method_row)
+        elif self._method in {'POST', 'PUT', 'DELETE'}:
             if not payload_frame.children:
-                self.create_block(payload_frame, "POST:", self.method_row)
+                self.create_block(payload_frame, self._method, self.method_row)
         else:
             raise ValueError
         # To do
@@ -131,7 +134,7 @@ class ClientView(object):
         delete_button.append(del_button)
         del_button.bind('<ButtonRelease>', (lambda event: self.del_row(payload_frame, event.widget,
                                                                        (key_entry, value_entry, delete_button))))
-        self.button_disable(
+        self.button_status(
             payload_frame, (key_entry, value_entry, delete_button))
 
     def del_row(self, payload_frame, button, row):
@@ -144,7 +147,7 @@ class ClientView(object):
             widget in value_entry and value_entry.remove(widget)
             widget in delete_button and delete_button.remove(widget)
         button.master.destroy()
-        self.button_disable(
+        self.button_status(
             payload_frame, (key_entry, value_entry, delete_button))
 
     def create_block(self, frame, text, row):
@@ -160,21 +163,7 @@ class ClientView(object):
         add_button.pack(side=RIGHT)
         self.add_row(frame, row)
 
-    # @staticmethod
-    def remove_block(self, frame, row):
-        """
-        删除一整块区域包括输入框、按钮等
-        """
-        for v in row:
-            v.clear()
-        while 1:
-            if frame.children:
-                frame.children.popitem()[1].destroy()
-            else:
-                break
-        frame.configure(height=1)
-
-    def button_disable(self, payload_frame, row):
+    def button_status(self, payload_frame, row):
         """
         判断删除按钮是否应该禁用
         """
@@ -190,7 +179,7 @@ class ClientView(object):
             # 如果不解绑的话，就算禁用也是可以点击。使用按钮的command参数无法返回是哪个按钮点击的。
             delete_button[0].unbind('<ButtonRelease>')
 
-    def submit(self):
+    def send(self):
         """
         点击提交调用，仅供改写使用
         :return:
@@ -198,6 +187,19 @@ class ClientView(object):
         print([self._method, len(self._key_entry), len(self._value_entry), len(self._value_del_button),
                self._check_status, len(self._header_key), len(self._header_value), len(self._header_del_button)])
 
+    @staticmethod
+    def remove_block(frame, row):
+        """
+        删除一整块区域包括输入框、按钮等
+        """
+        for v in row:
+            v.clear()
+        while 1:
+            if frame.children:
+                frame.children.popitem()[1].destroy()
+            else:
+                break
+        frame.configure(height=1)
 
 def get_screen_size(window):
     return window.winfo_screenwidth(), window.winfo_screenheight()

@@ -1,4 +1,5 @@
 from tkinter import *
+from sys import platform as _platform
 import threading
 
 import utils
@@ -13,13 +14,13 @@ class Client(view.ClientView):
         self.root = master
         self.test = httpclient.HttpSession()
 
-    def submit(self):
+    def send(self):
         self._send_button.configure(state="disabled", text="Wait for response ···")
-        t = threading.Thread(target=self.submit_event)
+        t = threading.Thread(target=self.send_request)
         t.setDaemon(True)
         t.start()
 
-    def submit_event(self):
+    def send_request(self):
         url = self._url_entry.get()
         if url.find("http", 0, 7) < 0:
             self._url_entry.insert(0, "http://")
@@ -76,7 +77,19 @@ if __name__ == '__main__':
     root.title("Api-Client")
     Client(master=root)
     root.minsize(800, 600)
-    root.iconbitmap('./img/Api-Client.ico')
+
+    # Linux
+    if _platform == "linux" or _platform == "linux2":
+        root.iconbitmap('./img/Api-Client.xbm')
+    # MAC OS X
+    elif _platform == "darwin":
+        root.iconbitmap('./img/Api-Client.xbm')
+        # 解决MAC OS 最小化无法打开问题
+        root.createcommand('tk::mac::ReopenApplication', root.deiconify)
+    # Windows
+    elif _platform == "win32" or _platform == "win64":
+        root.iconbitmap('./img/Api-Client.ico')
+    # root.iconbitmap('./img/Api-Client.ico')
     root["bg"] = 'grey'
     root.attributes("-alpha", 0.88)
     # if platform.system() == "Windows":
