@@ -46,6 +46,7 @@ class ClientView(object):
         method.pack(side=LEFT)
         url_label.pack(side=LEFT)
         self._url_entry.pack(side=RIGHT, expand=YES, fill=X)
+        self._url_entry.focus()
 
         # POST参数行
         payload_frame = Frame(self.root)
@@ -62,6 +63,7 @@ class ClientView(object):
         header.pack(side=LEFT)
         self._send_button = Button(
             send_frame, text="Send", width=10, command=(lambda: self.send()))
+        self._send_button.bind('<Return>', self.send)
         self._send_button.pack(side=RIGHT)
         # 动作
         method.bind('<<ComboboxSelected>>', (lambda event: self.switch_method(
@@ -90,9 +92,6 @@ class ClientView(object):
         self._method = method_value
         if self._method == 'GET':
             self.remove_block(payload_frame, self.method_row)
-        # elif self._method == 'POST':
-        #     if not payload_frame.children:
-        #         self.create_block(payload_frame, "POST:", self.method_row)
         elif self._method in {'POST', 'PUT', 'DELETE'}:
             if not payload_frame.children:
                 self.create_block(payload_frame, self._method, self.method_row)
@@ -162,6 +161,7 @@ class ClientView(object):
                             command=(lambda: self.add_row(frame, row)))
         add_button.pack(side=RIGHT)
         self.add_row(frame, row)
+        self._url_entry.focus()
 
     def button_status(self, payload_frame, row):
         """
@@ -200,6 +200,7 @@ class ClientView(object):
             else:
                 break
         frame.configure(height=1)
+
 
 def get_screen_size(window):
     return window.winfo_screenwidth(), window.winfo_screenheight()

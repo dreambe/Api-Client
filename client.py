@@ -28,14 +28,14 @@ class Client(view.ClientView):
 
         request_meta, response_meta = self.test.request("get", url)
 
-        print('request_headers \n', request_meta['request_headers'])
-        print('request_body \n', request_meta['request_body'])
-        print('response_time \n', response_meta['response_time'])
-        print('status_code \n', response_meta['status_code'])
-        print('response_headers \n', response_meta['response_headers'])
-        print('response_content \n', response_meta['response_content'])
+        # print('request_headers \n', request_meta['request_headers'])
+        # print('request_body \n', request_meta['request_body'])
+        # print('response_time \n', response_meta['response_time'])
+        # print('status_code \n', response_meta['status_code'])
+        # print('response_headers \n', response_meta['response_headers'])
+        # print('response_content \n', response_meta['response_content'])
 
-        result_data = utils.assemble(request_meta, response_meta)
+        result_data = utils.parse(request_meta, response_meta)
         self.result(result_data)
         self._send_button.configure(state="normal", text="Send")
 
@@ -50,7 +50,7 @@ class Client(view.ClientView):
                                           "3.HEADER中不允许有中文字符\n")
         elif result_data['errno'] == 802:
             self._header_text.insert(END, "错误：解析出错\n"
-                                          "1.无法解析返回的状态\n")
+                                          "1.解析json编码出错\n")
         elif result_data['errno'] == 803:
             self._header_text.insert(END, "错误：解析出错\n"
                                           "1.无法解析此端口")
@@ -64,10 +64,12 @@ class Client(view.ClientView):
 
     def insert_text(self, result_data):
 
-        self._header_text.insert(END, result_data['request'])
         self._header_text.insert(END, result_data['errmsg'])
+        self._header_text.insert(END, result_data['host_info'])
+        self._header_text.insert(END, result_data['request'])
         self._body_text.insert(END, result_data['status'])
         self._body_text.insert(END, result_data['rep_time'])
+        self._body_text.insert(END, result_data['content_size'])
         self._body_text.insert(END, "Response Body: \n")
         self._body_text.insert(END, result_data['rep_body'])
 

@@ -1,11 +1,19 @@
 import json
+import io
+import sys
+
+# 设置python默认编码为 utf-8
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')
 
 
-def assemble(request_meta, response_meta):
+def parse(request_meta, response_meta):
     """
-    组装结果返回，将header、body等组装到一起，输出到前端UI
+    解析、组装结果返回，将header、body等组装到一起，输出到前端UI
     """
-    data = {'errno': 0, 'rep_time': '', 'status': '', 'errmsg': '', 'rep_body': object, 'request': ''}
+    data = {'errno': 0, 'host_info': '', 'rep_time': '', 'status': '', 'content_size': '', 'errmsg': '', 'rep_body': object, 'request': ''}
+
+    # Host Info:
+    data['host_info'] = "Host: " + request_meta['host'] + "\n" + "Host-ip: " + request_meta['host-ip'] + "\n\n"
 
     # Request Headers:
     data['request'] = "Request Headers: \n"
@@ -24,7 +32,11 @@ def assemble(request_meta, response_meta):
 
     # Response Time:
     data['rep_time'] += "Time: "
-    data['rep_time'] += str(response_meta['response_time']) + " ms \n\n"
+    data['rep_time'] += str(response_meta['response_time']) + " ms    "
+
+    # Response Body Size:
+    size = round(float(request_meta['content_size']) / 1000, 3)
+    data['content_size'] += "Size: " + str(size) + " KB  \n\n"
 
     # Response Body:
     try:
@@ -36,11 +48,17 @@ def assemble(request_meta, response_meta):
         data['rep_body'] = "请求地址有误!"
     # else:
     #     data['errno'] = 1000
-    data['rep_body'] = format_json(data['rep_body'])
+    data['rep_body'], data['errno'] = parse_json(data['rep_body'])
+
     return data
 
 
-def format_json(content):
-    jsoninfo = json.dumps(content, ensure_ascii=False, indent=2)
-    print(jsoninfo)
-    return jsoninfo
+def parse_json(content):
+    try:
+        jsoninfo = json.dumps(content, ensure_ascii=False, indent=2)
+        errno = 0
+    except "UnicodeEncodeError":
+        jsoninfo = "解析出错！"
+        errno = 802
+
+    return jsoninfo, errno

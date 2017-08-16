@@ -1,6 +1,7 @@
 import logging
 import re
 import time
+import socket
 
 import requests
 from requests import Request, Response
@@ -9,6 +10,12 @@ from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema, Reque
 from exception import ParamsError
 
 absolute_http_url_regexp = re.compile(r"^https?://", re.I)
+host_regexp = reobj = re.compile(r"""(?xi)\A
+                                [a-z][a-z0-9+\-.]*://                  # Scheme
+                                ([a-z0-9\-._~%!$&'()*+,;=]+@)?         # User
+                                ([a-z0-9\-._~%]+                       # Named or IPv4 host
+                                |\[[a-z0-9\-._~%!$&'()*+,;=:]+\])      # IPv6 host
+                                """)
 
 
 class ApiResponse(Response):
@@ -37,6 +44,13 @@ class HttpSession(requests.Session):
         super(HttpSession, self).__init__(*args, **kwargs)
 
         self.base_url = base_url if base_url else ""
+
+    def _get_host(self, path):
+        match = reobj.search(path)
+        if match:
+            return match.group(2)
+        else:
+            return None
 
     def _build_url(self, path):
         """ prepend url with hostname unless it's already an absolute URL """
@@ -87,6 +101,7 @@ class HttpSession(requests.Session):
 
         # prepend url with hostname unless it's already an absolute URL
         url = self._build_url(url)
+        host = self._get_host(url)
         logging.info(" Start to {method} {url}".format(method=method, url=url))
         logging.debug(" kwargs: {kwargs}".format(kwargs=kwargs))
         # store meta data that is used when reporting the request to locust's statistics
@@ -104,14 +119,14 @@ class HttpSession(requests.Session):
                 auth_account["username"], auth_account["password"])
 
         response = self._send_request_safe_mode(method, url, **kwargs)
-        request_meta["url"] = (response.history and response.history[0] or response)\
-            .request.path_url
+        request_meta["url"] = (response.history and response.history[0] or response).request.path_url
 
         # record the consumed time
         response_meta["response_time"] = int((time.time() - request_meta["start_time"]) * 1000)
         response_meta["status_code"] = response.status_code
         response_meta["response_headers"] = response.headers
         response_meta["response_content"] = response.content
+        # response_meta["content_size"] = round(float(len(response.content)) / 1024, 3)
 
         # get the length of the content, but if the argument stream is set to True, we take
         # the size from the content-length header, in order to not trigger fetching of the body
@@ -122,6 +137,8 @@ class HttpSession(requests.Session):
 
         request_meta["request_headers"] = response.request.headers
         request_meta["request_body"] = response.request.body
+        request_meta["host"] = host
+        request_meta["host-ip"] = socket.gethostbyname(host)
 
         logging.debug(" response: {response}".format(response=request_meta))
 
