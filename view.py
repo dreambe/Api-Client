@@ -211,9 +211,11 @@ def get_window_size(window):
 
 
 def center_window(root, width, height):
-    screenwidth = root.winfo_screenwidth()
-    screenheight = root.winfo_screenheight()
-    size = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+    sw = root.winfo_screenwidth()
+    sh = root.winfo_screenheight()
+    x = (sw - width) / 2 - 6
+    y = (sh - height) / 2 - 15
+    size = '%dx%d+%d+%d' % (width, height, x, y)
     root.geometry(size)
 
 
@@ -222,7 +224,7 @@ if __name__ == '__main__':
     root = Tk()
     root.title("Api-Client")
     ClientView(master=root)
-    center_window(root, 400, 300)
+    center_window(root, 600, 400)
     root.maxsize(1200, 900)
     root.minsize(600, 400)
     root.resizable(True, True)

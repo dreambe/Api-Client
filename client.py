@@ -11,7 +11,8 @@ class Client(view.ClientView):
 
     def __init__(self, master=None):
         super(Client, self).__init__()
-        self.root = master
+        # self.root = master
+        self.set_view(self.root)
         self.test = httpclient.HttpSession()
 
     def send(self):
