@@ -10,7 +10,12 @@ def parse(request_meta, response_meta):
     """
     解析、组装结果返回，将header、body等组装到一起，输出到前端UI
     """
-    data = {'errno': 0, 'host_info': '', 'rep_time': '', 'status': '', 'content_size': '', 'errmsg': '', 'rep_body': object, 'request': ''}
+    data = {'errno': 0, 'host_info': '', 'rep_time': '', 'status': '',
+            'content_size': '', 'errmsg': '', 'rep_body': object, 'request': ''}
+
+    if request_meta is None:
+        data['errno'] = 803
+        return data
 
     # Host Info:
     data['host_info'] = "Host: " + request_meta['host'] + "\n" + "Host-ip: " + request_meta['host-ip'] + "\n\n"

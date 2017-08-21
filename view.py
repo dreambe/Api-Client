@@ -1,8 +1,11 @@
 from tkinter import *
 from tkinter.ttk import *
+from sys import platform as _platform
+
+import tkinter as tk
 
 
-class ClientView(object):
+class ClientView(tk.Frame):
     _method = 'GET'
     _check_status = False
 
@@ -23,8 +26,28 @@ class ClientView(object):
     _header_text = object
     _body_text = object
 
-    def __init__(self, master=None):
-        self.root = master
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Api-Client")
+        center_window(self.root, 800, 600)
+        # root.maxsize(1200, 900)
+        # root.minsize(600, 400)
+        # root.resizable(True, True)
+        # root.mainloop()
+        self.root.minsize(600, 400)
+        self.root.resizable(True, True)
+
+        # Linux
+        if _platform == "linux" or _platform == "linux2":
+            self.root.iconbitmap('./img/Api-Client.xbm')
+        # MAC OS X
+        elif _platform == "darwin":
+            self.root.iconbitmap('./img/Api-Client.xbm')
+            # 解决MAC OS 最小化无法打开问题
+            self.root.createcommand('tk::mac::ReopenApplication', root.deiconify)
+        # Windows
+        elif _platform == "win32" or _platform == "win64":
+            self.root.iconbitmap('./img/Api-Client.ico')
         # 生成控制框架
         self.control_frame()
         # 生成结果框架
@@ -47,6 +70,7 @@ class ClientView(object):
         url_label.pack(side=LEFT)
         self._url_entry.pack(side=RIGHT, expand=YES, fill=X)
         self._url_entry.focus()
+        # self._url_entry.bind('<Return>', lambda event: self.send())
 
         # POST参数行
         payload_frame = Frame(self.root)
@@ -63,7 +87,6 @@ class ClientView(object):
         header.pack(side=LEFT)
         self._send_button = Button(
             send_frame, text="Send", width=10, command=(lambda: self.send()))
-        self._send_button.bind('<Return>', self.send)
         self._send_button.pack(side=RIGHT)
         # 动作
         method.bind('<<ComboboxSelected>>', (lambda event: self.switch_method(
@@ -201,6 +224,9 @@ class ClientView(object):
                 break
         frame.configure(height=1)
 
+    def start(self):
+        self.root.mainloop()
+
 
 def get_screen_size(window):
     return window.winfo_screenwidth(), window.winfo_screenheight()
@@ -219,13 +245,34 @@ def center_window(root, width, height):
     root.geometry(size)
 
 
-if __name__ == '__main__':
+ClientView().start()
+# if __name__ == '__main__':
 
-    root = Tk()
-    root.title("Api-Client")
-    ClientView(master=root)
-    center_window(root, 600, 400)
-    root.maxsize(1200, 900)
-    root.minsize(600, 400)
-    root.resizable(True, True)
-    root.mainloop()
+#     root = Tk()
+#     root.title("Api-Client")
+#     ClientView(master=None)
+#     center_window(root, 800, 600)
+#     # root.maxsize(1200, 900)
+#     # root.minsize(600, 400)
+#     # root.resizable(True, True)
+#     # root.mainloop()
+#     root.minsize(600, 400)
+#     root.resizable(True, True)
+
+#     # Linux
+#     if _platform == "linux" or _platform == "linux2":
+#         root.iconbitmap('./img/Api-Client.xbm')
+#     # MAC OS X
+#     elif _platform == "darwin":
+#         root.iconbitmap('./img/Api-Client.xbm')
+#         # 解决MAC OS 最小化无法打开问题
+#         root.createcommand('tk::mac::ReopenApplication', root.deiconify)
+#     # Windows
+#     elif _platform == "win32" or _platform == "win64":
+#         root.iconbitmap('./img/Api-Client.ico')
+#     # root.iconbitmap('./img/Api-Client.ico')
+#     root["bg"] = 'grey'
+#     root.attributes("-alpha", 0.88)
+#     # if platform.system() == "Windows":
+#     #     root.wm_state('zoomed')
+#     root.mainloop()

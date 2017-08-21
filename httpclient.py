@@ -138,8 +138,10 @@ class HttpSession(requests.Session):
         request_meta["request_headers"] = response.request.headers
         request_meta["request_body"] = response.request.body
         request_meta["host"] = host
-        request_meta["host-ip"] = socket.gethostbyname(host)
-
+        try:
+            request_meta["host-ip"] = socket.gethostbyname(host)
+        except socket.gaierror:
+            return None, None
         logging.debug(" response: {response}".format(response=request_meta))
 
         try:
