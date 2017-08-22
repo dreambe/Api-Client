@@ -119,6 +119,8 @@ class HttpSession(requests.Session):
                 auth_account["username"], auth_account["password"])
 
         response = self._send_request_safe_mode(method, url, **kwargs)
+        if response is None:
+            return None, None
         request_meta["url"] = (response.history and response.history[0] or response).request.path_url
 
         # record the consumed time
@@ -126,7 +128,6 @@ class HttpSession(requests.Session):
         response_meta["status_code"] = response.status_code
         response_meta["response_headers"] = response.headers
         response_meta["response_content"] = response.content
-        # response_meta["content_size"] = round(float(len(response.content)) / 1024, 3)
 
         # get the length of the content, but if the argument stream is set to True, we take
         # the size from the content-length header, in order to not trigger fetching of the body
@@ -142,6 +143,7 @@ class HttpSession(requests.Session):
             request_meta["host-ip"] = socket.gethostbyname(host)
         except socket.gaierror:
             return None, None
+
         logging.debug(" response: {response}".format(response=request_meta))
 
         try:
@@ -165,7 +167,8 @@ class HttpSession(requests.Session):
         try:
             return requests.Session.request(self, method, url, **kwargs)
         except (MissingSchema, InvalidSchema, InvalidURL):
-            raise
+            # raise
+            return None
         except RequestException as ex:
             resp = ApiResponse()
             resp.error = ex

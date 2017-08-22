@@ -1,5 +1,4 @@
 from tkinter import *
-from sys import platform as _platform
 import threading
 
 import utils
@@ -9,21 +8,11 @@ import httpclient
 
 class Client(view.ClientView):
 
-    # def __init__(self, master=None):
-    #     super(Client, self).__init__()
-    #     self.root = master
-    #     self.test = httpclient.HttpSession()
-    def __init__(self):
-        super(Client, self).__init__()
-        # self.root = master
-        self.root.title("jlkjljklkj")
-        self._url_entry.bind('<Return>', lambda event: self.send())
-        self._send_button = Button(
-            send_frame, text="Send11", width=10, command=(lambda: self.send()))
+    def __init__(self, master=None):
+        super(Client, self).__init__(master)
         self.test = httpclient.HttpSession()
 
     def send(self):
-        print("ejjejj")
         self._send_button.configure(state="disabled", text="Sending...")
         t = threading.Thread(target=self.send_request)
         t.setDaemon(True)
@@ -82,27 +71,6 @@ class Client(view.ClientView):
         self._body_text.insert(END, result_data['rep_body'])
 
 
-# if __name__ == '__main__':
-#     root = Tk()
-#     root.title("Api-Client")
-#     Client(master=root)
-#     view.center_window(root, 800, 600)
-#     root.minsize(600, 400)
-
-#     # Linux
-#     if _platform == "linux" or _platform == "linux2":
-#         root.iconbitmap('./img/Api-Client.xbm')
-#     # MAC OS X
-#     elif _platform == "darwin":
-#         root.iconbitmap('./img/Api-Client.xbm')
-#         # 解决MAC OS 最小化无法打开问题
-#         root.createcommand('tk::mac::ReopenApplication', root.deiconify)
-#     # Windows
-#     elif _platform == "win32" or _platform == "win64":
-#         root.iconbitmap('./img/Api-Client.ico')
-#     # root.iconbitmap('./img/Api-Client.ico')
-#     root["bg"] = 'grey'
-#     root.attributes("-alpha", 0.88)
-#     # if platform.system() == "Windows":
-#     #     root.wm_state('zoomed')
-#     root.mainloop()
+if __name__ == '__main__':
+    client = Client(Tk())
+    client.start()
