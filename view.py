@@ -39,7 +39,7 @@ class ClientView(Frame):
         elif _platform == "darwin":
             self.root.iconbitmap('./img/Api-Client.xbm')
             # 解决MAC OS 最小化无法打开问题
-            self.root.createcommand('tk::mac::ReopenApplication', root.deiconify)
+            self.root.createcommand('tk::mac::ReopenApplication', self.root.deiconify)
         # Windows
         elif _platform == "win32" or _platform == "win64":
             self.root.iconbitmap('./img/Api-Client.ico')
