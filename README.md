@@ -17,8 +17,8 @@ $ pip install requests
  - [X] get
  - [X] post
  - [X] header
- - [ ] put
- - [ ] delete
+ - [X] put
+ - [X] delete
 
 ## 特点
  - 允许输入的url带有中文
@@ -26,6 +26,7 @@ $ pip install requests
  - 返回的结果开头出现BOM、结束出现空格和回车时，提出警告
 
 ## 界面
+待补充
 
 
 ## 许可
